@@ -1,3 +1,4 @@
+import pickle
 class Mapmanager():
     def __init__(self):
         self.model = 'block' 
@@ -21,6 +22,44 @@ class Mapmanager():
             return self.colors[z]
         else:
             return self.colors[len(self.colors) - 1]
+        
+    def buildBlock(self, pos):
+        x, y, z = pos
+        new = self.findHighesEmpty(pos)
+        if new[2] <= z +1:
+            self.addBlock(new)
+
+    def delBlock(self, pos):
+        blocks = self.findBlocks(pos)
+        for block in blocks:
+            block.removeNode()
+
+
+    def delBlockFrom(self, pos):
+        x, y, z = self.findHighesEmpty(pos)
+        pos = x,y,z-1
+        for block in self.findBlocks(pos):
+            block.removeNode()
+            
+
+    def saveMap(self):
+        blocks = self.land.getChildren()
+        with open('my_map.dat', "wb") as file:
+            pickle.dump(len(blocks), file)
+            for block in blocks:
+                x, y, z = block.getPos()
+                pos = (int(x), int(y), int(z))
+                pickle.dump(pos, file)
+
+    def loadMap(self):
+        self.clear()
+        with open('my_map.dat', "rb") as file:
+            lenght = pickle.load(file)
+            for i in range(lenght):
+                pos = pickle.load(file)
+                self.addBlock(pos)
+                
+    
  
  
     def addBlock(self, position):
